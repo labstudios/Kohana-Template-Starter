@@ -2,7 +2,7 @@
 
 abstract class Controller_Master extends Controller {
 
-    const ASSET_PATH = "/assets/";
+    const ASSET_PATH = "assets/";
     const SKELETON = "skeleton";
     protected $page = "";
     private $_css = array("reset", 'screen');
@@ -59,7 +59,7 @@ abstract class Controller_Master extends Controller {
                 $this->addPHPJS($val);
             break;
             default:
-                $this->$key = $val;
+                //$this->$key = $val;
             break;
         }
     }
@@ -103,7 +103,7 @@ abstract class Controller_Master extends Controller {
         foreach($this->_css as $file)
         {
             $full_path = self::ASSET_PATH."css/".$file.".css";
-            $ret .= "\t<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"$full_path\" />\r\n";
+            $ret .= "\t".HTML::style($full_path, array('media' => 'screen'))."\r\n";
         }
         return $ret;
     }
@@ -114,7 +114,7 @@ abstract class Controller_Master extends Controller {
         foreach($this->_pcss as $file)
         {
             $full_path = self::ASSET_PATH."css/".$file.".css";
-            $ret .= "\t<link rel=\"stylesheet\" type=\"text/css\" media=\"print\" href=\"$full_path\" />\r\n";
+            $ret .= "\t".HTML::style($full_path, array('media' => 'print'))."\r\n";
         }
         return $ret;
     }
@@ -125,7 +125,7 @@ abstract class Controller_Master extends Controller {
         foreach($this->_js as $file)
         {
             $full_path = self::ASSET_PATH."js/".$file.".js";
-            $ret .= "\t<script type=\"text/javascript\" src=\"$full_path\"></script>\r\n";
+            $ret .= "\t".HTML::script($full_path)."\r\n";
         }
         return $ret;
     }
@@ -136,7 +136,7 @@ abstract class Controller_Master extends Controller {
         foreach($this->_phpjs as $file)
         {
             $full_path = self::ASSET_PATH."js/".$file.".php";
-            $ret .= "\t<script type=\"text/javascript\" src=\"$full_path\"></script>\r\n";
+            $ret .= "\t".HTML::script($full_path)."\r\n";
         }
         return $ret;
     }
@@ -146,6 +146,10 @@ abstract class Controller_Master extends Controller {
         if($this->content != "" && !$this->shown && !$this->ajax)
         {
             $this->show();
+        }
+        else if($this->content != "" && $this->ajax)
+        {
+        	$this->response->body($this->content);
         }
     }
     
