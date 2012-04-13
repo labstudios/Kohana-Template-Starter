@@ -3,21 +3,27 @@
 abstract class Controller_Master extends Controller {
 
     const ASSET_PATH = "assets/";
-    const SKELETON = "skeleton";
+    const SKELETON = "templates/skeleton";
+    const DEFAULT_NAV = "templates/nav";
+    const DEFAULT_FOOTER = "templates/footer";
     protected $page = "";
-    private $_css = array("reset", 'screen');
+    private $_css = array("reset", "fonts", "screen", "responsive");
     private $_pcss = array();
-    private $_js = array("mootools_core", "tracer");
+    private $_js = array("global");
     private $_phpjs = array();
+    private $_meta = array("author" => "Riser", "description" => "", "viewport" => "width=device-width,initial-scale=1");
     protected $content = "";
+    protected $nav = "";
+    protected $footer = "";
     protected $title = "Default Title";
-    protected $meta = "";
     protected $shown = false;
     protected $ajax = false;
 
     public function Controller_Master($request, $response)
     {
         parent::__construct($request, $response);
+        $this->nav = $this->nav == "" ? View::factory(self::DEFAULT_NAV):$this->nav;
+        $this->footer = $this->footer == "" ? View::factory(self::DEFAULT_FOOTER):$this->footer;
     }
     
     public function __get($key)
@@ -35,6 +41,9 @@ abstract class Controller_Master extends Controller {
             break;
             case "phpjs":
             	return $this->compilePHPJS();
+            break;
+            case "meta":
+                return $this->compileMeta();
             break;
             default:
                 return null;
@@ -57,6 +66,9 @@ abstract class Controller_Master extends Controller {
             break;
             case "phpjs":
                 $this->addPHPJS($val);
+            break;
+            case "meta":
+                $this->addMeta($val);
             break;
             default:
                 //$this->$key = $val;
@@ -84,15 +96,33 @@ abstract class Controller_Master extends Controller {
         $this->_pcss[] = $file;
     }
     
+    protected function addMeta($name, $content = "")
+    {
+        if(is_array($name))
+        {
+            foreach ($name as $key => $val)
+            {
+                $this->_meta[$key] = $val;
+            }
+        }
+        else
+        {
+            $this->_meta[$name] = $content;
+        }
+    }
+    
     protected function show()
     {
     	$this->page = $this->page == "" ? View::factory(self::SKELETON):$this->page;
         $this->page->set('title', $this->title);
-        $this->page->set('css', $this->css);
-        $this->page->set('pcss', $this->pcss);
-        $this->page->set('js', $this->js.$this->phpjs);
-        $this->page->set('meta', $this->meta);
-        $this->page->set('content', $this->content);
+        $this->page->set('meta', $this->meta."\r\n");
+        $this->page->set('css', $this->css."\r\n");
+        $this->page->set('pcss', $this->pcss."\r\n");
+        $this->page->set('js', $this->js.$this->phpjs."\r\n");
+        $this->page->set('meta', $this->meta."\r\n");
+        $this->page->set('nav', $this->nav."\r\n");
+        $this->page->set('content', $this->content."\r\n");
+        $this->page->set('footer', $this->footer."\r\n");
         $this->shown = true;
 		$this->response->body($this->page);
     }
@@ -141,6 +171,16 @@ abstract class Controller_Master extends Controller {
         return $ret;
     }
     
+    private function compileMeta()
+    {
+        $ret = "";
+        foreach($this->_meta as $k => $v)
+        {
+            $ret .="\t<meta name=\"$k\" content=\"$v\" />\r\n";
+        }
+        return $ret;
+    }
+    
     public function __destruct()
     {
         if($this->content != "" && !$this->shown && !$this->ajax)
@@ -150,18 +190,6 @@ abstract class Controller_Master extends Controller {
         else if($this->content != "" && $this->ajax)
         {
         	$this->response->body($this->content);
-        }
-    }
-    
-    public static function cleanData($data, $method = FILTER_SANITIZE_STRING)
-    {
-        if(is_array($data))
-        {
-            return (Object) filter_var_array($data, $method);
-        }
-        else
-        {
-            return filter_var($data, $method);
         }
     }
 } // End Main
