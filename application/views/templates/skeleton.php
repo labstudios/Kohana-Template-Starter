@@ -57,6 +57,3 @@
   </div> <!--! end of #container -->
 </body>
 </html>
-<!-- 
-Author: Alfredo Saavedra at RiserMedia //Revised HTML5-boilerplate
--->

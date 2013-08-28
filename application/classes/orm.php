@@ -54,7 +54,7 @@ class ORM extends Kohana_ORM {
     {
         try
         {
-            return parent::__set($key, $val);
+            parent::__set($key, $val);
         }
         catch (Exception $e)
         {
