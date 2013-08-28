@@ -11,8 +11,6 @@
   
   <?php echo $meta; ?>
 <!--Adds HTML5 Tags to IE7,8--> 
-	<?php echo HTML::script(Controller_Master::ASSET_PATH."js/libs/modernizr-2.0.6.min.js"); ?>
-    
 	<?php echo HTML::script("https://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"); ?>
 	
     <!--[if (lt IE 9) & (!IEMobile)]>
@@ -29,14 +27,6 @@
   <!-- JS scripts concatenated and minified via ant build script-->
   <?php echo $js;?>
   <!-- end scripts-->
-
-
-  <script> // Change UA-XXXXX-X to be your site's ID
-    window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
-    Modernizr.load({
-      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
-    });
-  </script>
   
 </head>
 <body>

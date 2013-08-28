@@ -7,23 +7,29 @@ abstract class Controller_Master extends Controller {
     const DEFAULT_NAV = "templates/nav";
     const DEFAULT_FOOTER = "templates/footer";
     protected $page = "";
-    private $_css = array("reset", "fonts", "screen", "responsive");
+    private $_css = array("reset",  "screen");
     private $_pcss = array();
     private $_js = array("global");
     private $_phpjs = array();
-    private $_meta = array("author" => "Riser", "description" => "", "viewport" => "width=device-width,initial-scale=1");
+    private $_meta = array("author" => "B.W. Allen", "description" => "", "viewport" => "width=device-width,initial-scale=1");
     protected $content = "";
     protected $nav = "";
     protected $footer = "";
     protected $title = "Default Title";
     protected $shown = false;
     protected $ajax = false;
+    protected $params;
 
     public function Controller_Master($request, $response)
     {
         parent::__construct($request, $response);
         $this->nav = $this->nav == "" ? View::factory(self::DEFAULT_NAV):$this->nav;
         $this->footer = $this->footer == "" ? View::factory(self::DEFAULT_FOOTER):$this->footer;
+    }
+    
+    public function before()
+    {
+        $this->params = (Object) $this->request->param();
     }
     
     public function __get($key)
@@ -181,7 +187,7 @@ abstract class Controller_Master extends Controller {
         return $ret;
     }
     
-    public function __destruct()
+    public function after()
     {
         if($this->content != "" && !$this->shown && !$this->ajax)
         {
