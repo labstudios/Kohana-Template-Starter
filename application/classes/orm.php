@@ -32,14 +32,23 @@ class ORM extends Kohana_ORM {
     }
     
     /**
- 	 * Overrides the __get function in Kohana ORM models. Forces it to use the new getAttribute alias.
+ 	 * Overrides the __get function in Kohana ORM models. Defaults to call the get____() function if there is one, then turns control
+     * back to Kohana to fulfill the request if no getter function is specified.
  	 * @author	Brent Allen
  	 * @param	string	key	the attribute of the class instance to attempt to grab
  	 * @return 	*	    returns the attribute if it can be retrieved, returns null otherwise.
   	*/
     public function __get($key)
     {
-        return $this->getAttribute($key);
+        $funcName = "get".ucfirst($key);
+        if(method_exists($this, $funcName))
+		{
+			return $this->$funcName();
+		}
+		else
+		{
+			return $this->getAttribute($key);
+		}
     }
     
     /**
@@ -63,14 +72,23 @@ class ORM extends Kohana_ORM {
     }
     
     /**
- 	 * Overrides the __set function in Kohana ORM models. Forces it to use the new setAttribute alias.
+ 	 * Overrides the __set function in Kohana ORM models. Tries to use set___() if one exists.
+     * Returns control to Kohana to fulfill request if no setter function is specified.
  	 * @author	Brent Allen
  	 * @param	string	key	the attribute of the class instance to attempt to grab
  	 * @return 	*	    returns the attribute if it can be retrieved, returns null otherwise.
   	*/
     public function __set($key, $val)
     {
-        $this->setAttribute($key, $val);
+        $funcName = "set".ucfirst($key);
+		if(method_exists($this, $funcName))
+		{
+			return $this->$funcName($val);
+		}
+		else
+		{
+			$this->setAttribute($key, $val);
+		}
     }
     
     /**
