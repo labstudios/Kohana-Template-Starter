@@ -1,35 +1,77 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-abstract class Controller_Master extends Controller {
+/**
+ * Main class
+ * 
+ * The purpose of this class is to have a base structure for
+ * the web site. A default header and footer view can instantly
+ * be implemented into all controllers.
+ * 
+ * To use, simply have your controller class extend Main.
+ * 
+ * To set the content for the page:
+ * 
+ * $this->content = View::factory("view/path");
+ * 
+ * If the header and/or footer do need to be different
+ * than the standard, then can be set in like manner.
+ * 
+ * $this->header = View::factory("view/path");
+ * $this->footer = View::factory("view/path");
+ * 
+ * To include js or css files, simply set js and css.
+ * Both of these can be set several times. Each time
+ * they are set, the list will be added to, not replaced.
+ * js and css folders will be added respectively to the
+ * ASSET_PATH, so you don't need to worry about those.
+ *  - Do not include the file extensions (.js and .css)
+ *  - Do not use the _js variables. They are protected in
+ *     case they need to be fully reset in a controller,
+ *     but should not be accessed every time you add a file.
+ *  - All js and css will be added in the <head> tag.
+ * 
+ * $this->js = "folder/file";
+ * $this->js = "folder/otherfile";
+ * $this->css = "folder/file";
+ * 
+ * If a controller needs to respond to an AJAX request, 
+ * set $this->ajax = true. The skeleton will not be used.
+ * Only the content will be output.
+ * 
+ * Ideally, only global adjustments should be made to the skeleton template.
+ * If you need a different base structure for specific pages, you can 
+ * set the page variable. Note that all the css, js, content, header, footer, etc.
+ * will still be sent to the page view automatically.
+ * 
+ * $this->page = View::factory("templates/new_skeleton");
+ */
+abstract class Main extends Controller {
 
     const ASSET_PATH = "assets/";
     const SKELETON = "templates/skeleton";
-    const DEFAULT_NAV = "templates/nav";
+    const DEFAULT_HEADER = "templates/header";
     const DEFAULT_FOOTER = "templates/footer";
     protected $page = "";
-    private $_css = array("reset",  "screen");
-    private $_pcss = array();
-    private $_js = array("global");
-    private $_phpjs = array();
-    private $_meta = array("author" => "B.W. Allen", "description" => "", "viewport" => "width=device-width,initial-scale=1");
+    protected $_css = array("reset", "screen");
+    protected $_pcss = array();
+    protected $_js = array(
+        "https://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js", 
+        "global");
+    protected $_phpjs = array();
+    protected $_meta = array("author" => "B.W. Allen", "description" => "", "viewport" => "width=device-width,initial-scale=1");
     protected $content = "";
-    protected $nav = "";
+    protected $header = "";
     protected $footer = "";
     protected $title = "Default Title";
     protected $shown = false;
     protected $ajax = false;
     protected $params;
-
-    public function Controller_Master($request, $response)
-    {
-        parent::__construct($request, $response);
-        $this->nav = $this->nav == "" ? View::factory(self::DEFAULT_NAV):$this->nav;
-        $this->footer = $this->footer == "" ? View::factory(self::DEFAULT_FOOTER):$this->footer;
-    }
     
     public function before()
     {
         $this->params = (Object) $this->request->param();
+        $this->header = View::factory(self::DEFAULT_HEADER);
+        $this->footer = View::factory(self::DEFAULT_FOOTER);
     }
     
     public function __get($key)
@@ -126,7 +168,7 @@ abstract class Controller_Master extends Controller {
         $this->page->set('pcss', $this->pcss."\r\n");
         $this->page->set('js', $this->js.$this->phpjs."\r\n");
         $this->page->set('meta', $this->meta."\r\n");
-        $this->page->set('nav', $this->nav."\r\n");
+        $this->page->set('header', $this->header."\r\n");
         $this->page->set('content', $this->content."\r\n");
         $this->page->set('footer', $this->footer."\r\n");
         $this->shown = true;
@@ -138,7 +180,7 @@ abstract class Controller_Master extends Controller {
         $ret = "";
         foreach($this->_css as $file)
         {
-            $full_path = self::ASSET_PATH."css/".$file.".css";
+            $full_path = preg_match('/^http/', $file) > 0 ? $file:self::ASSET_PATH."css/".$file.".css";
             $ret .= "\t".HTML::style($full_path, array('media' => 'screen'))."\r\n";
         }
         return $ret;
@@ -149,7 +191,7 @@ abstract class Controller_Master extends Controller {
         $ret = "";
         foreach($this->_pcss as $file)
         {
-            $full_path = self::ASSET_PATH."css/".$file.".css";
+            $full_path = preg_match('/^http/', $file) > 0 ? $file:self::ASSET_PATH."css/".$file.".css";
             $ret .= "\t".HTML::style($full_path, array('media' => 'print'))."\r\n";
         }
         return $ret;
@@ -160,7 +202,7 @@ abstract class Controller_Master extends Controller {
         $ret = "";
         foreach($this->_js as $file)
         {
-            $full_path = self::ASSET_PATH."js/".$file.".js";
+            $full_path = preg_match('/^http/', $file) > 0 ? $file:self::ASSET_PATH."js/".$file.".js";
             $ret .= "\t".HTML::script($full_path)."\r\n";
         }
         return $ret;

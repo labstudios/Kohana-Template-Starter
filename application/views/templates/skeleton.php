@@ -11,10 +11,9 @@
   
   <?php echo $meta; ?>
 <!--Adds HTML5 Tags to IE7,8--> 
-	<?php echo HTML::script("https://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"); ?>
 	
     <!--[if (lt IE 9) & (!IEMobile)]>
-    <?php echo HTML::script(Controller_Master::ASSET_PATH."js/libs/selectivizr-min.js"); ?>
+    <?php echo HTML::script(Main::ASSET_PATH."js/libs/selectivizr-min.js"); ?>
 	<![endif]-->
 	<link rel="profile" href="http://gmpg.org/xfn/11" />	
 
@@ -33,9 +32,7 @@
 
   <div id="container"> 
     <header id="main_header"  class="inside">
-	    <nav class="main_nav"> 
-            <?php echo $nav; ?>
-        </nav>
+	    <?php echo $header; ?>
     </header>
     <section id="main" class="inside">
         <?php echo $content; ?>

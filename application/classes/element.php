@@ -1,6 +1,32 @@
 <?php
-require_once("attributelist.php");
-
+/**
+ * An Element class to create tag elements
+ * as an alternative to the array of helpers Kohana
+ * provides. The idea is to create a more straightforward
+ * and object-oriented approach to HTML Elements.
+ * 
+ * Footprint:
+ * new Element(String  tagType, String content, Array attributes)
+ * 
+ * Output directly:
+ * echo new Element("p", "Lorem ipsum", array("class" => "short"));
+ * 
+ * outputs: <p class="short">Lorem Ipsum</p>
+ * --------------------------------------------
+ * Output after adding parts
+ * 
+ * $el = new Element("div");
+ * $el->content = new Element("p", "Lorem ipsum", array("class" => "short"));
+ * $el->attributes["class"] = "red";
+ * $el->attributes["data-id"] = "17";
+ * echo $el
+ * 
+ * Outputs:
+ * <div class="red" data-id="17">
+ *  <p class="short">Lorem Ipsum</p>
+ * </div>
+ * 
+ */
 class Element
 {
     private $_selfTerminate = false;
